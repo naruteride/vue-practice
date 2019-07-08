@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>할 일 목록</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            cursor: pointer;
+            position: relative;
+            padding: 8px;
+            padding-left: 40px;
+            font-size: 14px;
+            background-color: #eeeeee;
+            user-select: none;
+            transition: 0.2s;
+        }
+        ul li:hover {
+            background-color: #dddddd;
+        }
+        ul li.checked {
+            text-decoration: line-through;
+            color: #ffffff;
+            background-color: #888888;
+        }
+        ul li.checked::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 16px;
+            transform: rotate(45deg);
+            width: 8px;
+            height: 8px;
+            border: solid #ffffff;
+            border-width: 0 1px 1px 0;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 12px 16px;
+        }
+        .btn-close:hover {
+            color: #ffffff;
+            background-color: #f44336;
+        }
+
+        .header {
+            padding: 30px;
+            text-align: center;
+            color: yellow;
+            background-color: purple;
+        }
+        .geader::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .input {
+            float: left;
+            width: 75%;
+            height: 35px;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .btn-add {
+            cursor: pointer;
+            float: left;
+            width: 25%;
+            height: 35px;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            color: #555555;
+            background-color: #d9d9d9;
+            transition: 0.2s;
+        }
+        .btn-add {
+            background-color: #bbbbbb;
+        }
+        .completed {
+            text-decoration: none;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="main">
+        <div id="header" class="header">
+            <h2>Todo List App</h2>
+            <input v-model="todo" v-on:keyup.enter="addTodo" type="text" id="task" class="input" placeholder="입력 후 엔터!">
+            <span class="btn-add" v-on:click="addTodo">추가</span>
+        </div>
+        <ul id="to-do-list">
+            <li v-for="(a, index) in todolist" v-bind:class="checked(a.done)" v-on:click="doneToggle(index)">
+                <span>{{ a.todo }}</span>
+                <span v-if="a.done"> (완료)</span>
+                <span v-on:click.stop="deleteTodo(index)" class="btn-close">&#x00D7;</span>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" defer>
+        let vm = new Vue({
+            el : "#main",
+            data : {
+                todo : "",
+                todolist : [
+                    { todo : "영화보기", done: false },
+                    { todo : "주말 산책", done: true },
+                    { todo : "ES6 학습", done: false },
+                    { todo : "고척 스카이돔", done: false }
+                ]
+            },
+            methods : {
+                checked : function(done) {
+                    if (done) {
+                        return { checked: true }
+                    } else {
+                        return { checked: false }
+                    }
+                },
+                addTodo : function(e) {
+                    if (this.todo != "") {
+                        this.todolist.push({ todo : this.todo, done : false });
+                        this.todo = "";
+                    }
+                },
+                deleteTodo : function(index) {
+                    this.todolist.splice(index, 1);
+                },
+                doneToggle : function(index) {
+                    this.todolist[index].done = !this.todolist[index].done;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

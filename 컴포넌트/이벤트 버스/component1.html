@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>1</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<!-- 이벤트 버스 -->
+<script type="text/javascript">
+    let eventBus = new Vue();
+</script>
+
+<!-- 첫 번째 자식 컴포넌트 -->
+<template id="child1Template">
+    <div>
+        <button v-on:click="clickEvent">child1 button!!</button>
+        <div>{{ currentTime }}</div>
+    </div>
+</template>
+
+<script type="text/javascript">
+    Vue.component("child1-component", {
+        template: "#child1Template",
+        data: function() {
+            return { currentTime: "" };
+        },
+        methods: {
+            clickEvent: function() {
+                let d = new Date();
+                let t = d.toLocaleTimeString() + " " + d.getMilliseconds() + "ms";
+                eventBus.$emit("click", t);    // clickEvent함수 발생 시 형제 요소에게 click이벤트를 발생시키고 t를 매개변수로 전달
+                this.currentTime = t;
+            }
+        } 
+    })
+</script>
+
+
+<!-- 두 번째 컴포넌트 -->
+<template id="child2Template">
+    <ul>
+        <li v-for="t in timelist">{{ t }}</li>
+    </ul>
+</template>
+<script type="text/javascript">
+    Vue.component("child2-component", {
+        template: "#child2Template",
+        data: function() {
+            return { timelist: [] };
+        },
+        created: function() {
+            eventBus.$on("click", this.child1Click);    // $emit을 통해 생성된 click 이벤트가 발생하면 this.child1Click 함수를 실행시킴
+        },
+        methods: {
+            child1Click: function(time) {
+                this.timelist.push(time);
+            }
+        }
+    })
+</script>
+
+<body>
+    <div id="app">
+        <child1-component></child1-component>
+        <hr>
+        <child2-component></child2-component>
+    </div>
+</body>
+<script type="text/javascript">
+    Vue.config.devtools = true;
+    
+    let app = new Vue({
+        el: "#app"
+    })
+</script>
+</html>
